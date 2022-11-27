@@ -16,7 +16,8 @@ class MenuItem extends Model
         return $this->belongsTo('App\Models\Link');
     }
 
-    public static function getMenuLinks($menuName) {
+    public static function getMenuLinks($menuName)
+    {
         $sql = "select l.*
             from menu_items m inner join links l on m.link_id = l.id
             where m.type='menu_item' and m.parent_id in(
