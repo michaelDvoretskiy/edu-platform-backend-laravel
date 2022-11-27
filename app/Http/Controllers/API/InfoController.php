@@ -13,9 +13,9 @@ class InfoController extends BaseController
 {
     public function __construct(private InfoService $infoService) {}
 
-    public function test() {
+    public function getInfo() {
         return $this->sendResponse(
-            $this->infoService->getMenuLinks('main_menu'),
+            $this->infoService->getInfo(),
             'User login successfully.'
         );
     }

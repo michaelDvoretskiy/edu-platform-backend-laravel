@@ -21,7 +21,7 @@ Route::controller(AuthController::class)->group(function(){
 });
 
 Route::controller(InfoController::class)->prefix('/info')->group(function() {
-   Route::get('/test', 'test');
+   Route::get('/get-general', 'getInfo');
 });
 
 
