@@ -9,7 +9,8 @@ class InfoService
     public function getInfo() {
         return [
             'info' => $this->getConfigInfo(),
-            'menu' => $this->getMainMenuLinks()
+            'menu' => $this->getMainMenuLinks(),
+            'socialLinks' => $this->getSocialLinks()
         ];
     }
 
@@ -33,5 +34,11 @@ class InfoService
     {
         $links = MenuItem::getMenuLinks('main_menu');
         return $links->map->only(['title', 'link', 'type'])->all();
+    }
+
+    private function getSocialLinks()
+    {
+        $links = MenuItem::getMenuLinks('social_links');
+        return $links->map->only(['link', 'icon_class'])->all();
     }
 }
