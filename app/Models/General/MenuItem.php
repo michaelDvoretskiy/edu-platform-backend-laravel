@@ -11,11 +11,6 @@ class MenuItem extends Model
 {
     use HasFactory;
 
-    public function link()
-    {
-        return $this->belongsTo('App\Models\Link');
-    }
-
     public static function getMenuLinks($menuName)
     {
         $sql = "select l.*

@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\InfoController;
+use App\Http\Controllers\API\PageController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -22,6 +23,10 @@ Route::controller(AuthController::class)->group(function(){
 
 Route::controller(InfoController::class)->prefix('/info')->group(function() {
    Route::get('/get-general', 'getInfo');
+});
+
+Route::controller(PageController::class)->prefix('/pages')->group(function() {
+    Route::get('/{page}', 'show');
 });
 
 
