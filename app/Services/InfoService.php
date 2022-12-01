@@ -2,16 +2,42 @@
 
 namespace App\Services;
 
+use App\Models\General\Carousel;
+use App\Models\General\CarouselItem;
 use App\Models\General\MenuItem;
 
 class InfoService
 {
-    public function getInfo() {
+    public function getInfo()
+    {
         return [
             'info' => $this->getConfigInfo(),
             'menu' => $this->getMainMenuLinks(),
             'socialLinks' => $this->getSocialLinks()
         ];
+    }
+
+    public function getCarousel($carouselName)
+    {
+        $carousel = Carousel::firstWhere('name', $carouselName);
+        if (!$carousel) {
+            return false;
+        }
+
+        $items = CarouselItem::where('carousel_id', $carousel->id)->orderBy('ord')->get();
+        return $items->map(function($elem) {
+            return [
+                'title' => $elem->title,
+                'content_text' => $elem->content_text,
+                'img_path' => $elem->img_path,
+                'btn_flag' => $elem->btn_flag,
+                'link_type' => $elem->link->type,
+                'link_title' => $elem->link->title,
+                'link' => $elem->link->link,
+                'icon_exists' => $elem->link->icon_exists,
+                'icon_class' =>  $elem->link->icon_class
+            ];
+        });
     }
 
     private function getConfigInfo()

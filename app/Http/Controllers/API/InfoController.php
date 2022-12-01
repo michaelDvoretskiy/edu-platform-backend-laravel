@@ -15,4 +15,11 @@ class InfoController extends BaseController
             'Info was sent successfully.'
         );
     }
+
+    public function getHomeCarousel() {
+        return $this->sendResponse(
+            $this->infoService->getCarousel('homePage'),
+            'Home carousel was sent successfully.'
+        );
+    }
 }
