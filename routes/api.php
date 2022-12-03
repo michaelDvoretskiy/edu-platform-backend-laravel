@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\InfoController;
 use App\Http\Controllers\API\PageController;
+use App\Http\Controllers\API\CourseController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -28,6 +30,10 @@ Route::controller(InfoController::class)->prefix('/info')->group(function() {
 
 Route::controller(PageController::class)->prefix('/pages')->group(function() {
     Route::get('/{page}', 'show');
+});
+
+Route::controller(CourseController::class)->prefix('/courses')->group(function() {
+    Route::get('/categories', 'showCategories');
 });
 
 

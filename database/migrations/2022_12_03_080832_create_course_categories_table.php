@@ -13,11 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('pages', function (Blueprint $table) {
+        Schema::create('course_categories', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->string('name', 50)->unique();
             $table->json('title');
+            $table->json('description');
+            $table->string('img_path', 100);
+            $table->unsignedBigInteger('link_id')->nullable();
+            $table->foreign('link_id')->references('id')->on('links');
+            $table->integer('ord')->nullable();
         });
     }
 
@@ -28,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('pages');
+        Schema::dropIfExists('course_categories');
     }
 };

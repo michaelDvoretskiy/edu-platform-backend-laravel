@@ -12,4 +12,8 @@ class Link extends Model
     use HasTranslations;
 
     public $translatable = ['title'];
+
+    protected $casts = [
+        'link_params' => 'array'
+    ];
 }

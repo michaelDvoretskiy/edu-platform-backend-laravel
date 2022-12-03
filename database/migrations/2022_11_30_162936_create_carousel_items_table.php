@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('carousel_id')->nullable();
             $table->foreign('carousel_id')->references('id')->on('carousels');
             $table->string('name', 50);
+            $table->unique(['carousel_id', 'name'], 'carousel_items_unique');
             $table->json('title');
             $table->json('content_text');
             $table->string('img_path', 100);

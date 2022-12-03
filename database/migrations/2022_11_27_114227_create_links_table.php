@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('links', function (Blueprint $table) {
             $table->id();
             $table->string('link');
+            $table->json('link_params')->nullable();
             $table->json('title');
             $table->string('type', 10);
             $table->boolean('icon_exists');
