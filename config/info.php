@@ -19,5 +19,17 @@ return [
     'titleSecond' => [
         'show' => true,
         'translate' => true,
+    ],
+    'addressTitle' => [
+        'show' => true,
+        'translate' => true,
+    ],
+    'quickLinksTitle' => [
+        'show' => true,
+        'translate' => true,
+    ],
+    'rightsReserved' => [
+        'show' => true,
+        'translate' => true,
     ]
 ];

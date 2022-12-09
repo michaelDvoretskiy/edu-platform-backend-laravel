@@ -4,4 +4,7 @@ return [
     'title' => 'Вивчаємо програмування',
     'titleFirst' => 'Вивчаємо',
     'titleSecond' => 'IT',
+    'addressTitle' => 'Адреса',
+    'quickLinksTitle' => 'Швидкі посилання',
+    'rightsReserved' => 'Михайло Дворецький, Усі права захищено.',
 ];
