@@ -17,4 +17,12 @@ class PageController extends BaseController
         }
         return $this->sendResponse($pageData,'Page data was sent successfully');
     }
+
+    public function getTeamMember($name) {
+        $teamMemberData = $this->pageService->getTeamMemberData($name);
+        if (!$teamMemberData) {
+            return $this->sendError('Team member not found');
+        }
+        return $this->sendResponse($teamMemberData,'Team member was sent successfully');
+    }
 }

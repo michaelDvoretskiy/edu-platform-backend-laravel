@@ -36,6 +36,10 @@ Route::controller(CourseController::class)->prefix('/courses')->group(function()
     Route::get('/categories', 'showCategories');
 });
 
+Route::controller(PageController::class)->prefix('/team-members')->group(function() {
+    Route::get('/{name}', 'getTeamMember');
+});
+
 
 Route::middleware('auth:sanctum')->group( function () {
     Route::get('/test', function() {
