@@ -34,6 +34,7 @@ Route::controller(PageController::class)->prefix('/pages')->group(function() {
 
 Route::controller(CourseController::class)->prefix('/courses')->group(function() {
     Route::get('/categories', 'showCategories');
+    Route::get('/category/{categoryName}', 'showCategory');
 });
 
 Route::controller(PageController::class)->prefix('/team-members')->group(function() {

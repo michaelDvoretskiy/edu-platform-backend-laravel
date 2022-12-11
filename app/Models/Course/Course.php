@@ -18,4 +18,24 @@ class Course extends Model
     {
         return $this->belongsTo(Link::class);
     }
+
+    public function categories()
+    {
+        return $this->belongsToMany(
+            CourseCategory::class,
+            'course_category_courses',
+            'course_id',
+            'course_category_id'
+        );
+    }
+
+    public function progLanguages()
+    {
+        return $this->belongsToMany(
+            ProgLanguage::class,
+            'course_prog_languages',
+            'course_id',
+            'prog_language_id'
+        );
+    }
 }

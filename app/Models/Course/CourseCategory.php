@@ -18,4 +18,14 @@ class CourseCategory extends Model
     {
         return $this->belongsTo(Link::class);
     }
+
+    public function courses()
+    {
+        return $this->belongsToMany(
+            Course::class,
+            'course_category_courses',
+            'course_category_id',
+            'course_id'
+        );
+    }
 }

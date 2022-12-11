@@ -16,4 +16,12 @@ class CourseController extends BaseController
         }
         return $this->sendResponse($categoriesData,'Categories list was sent successfully');
     }
+
+    public function showCategory($categoryName) {
+        $categoryData = $this->courseService->getCategory($categoryName);
+        if (!$categoryData) {
+            return $this->sendError('No category found');
+        }
+        return $this->sendResponse($categoryData,'Category data was sent successfully');
+    }
 }
