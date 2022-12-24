@@ -24,4 +24,20 @@ class CourseController extends BaseController
         }
         return $this->sendResponse($categoryData,'Category data was sent successfully');
     }
+
+    public function showCourse($courseName) {
+        $courseData = $this->courseService->getCourse($courseName);
+        if (!$courseData) {
+            return $this->sendError('No course found');
+        }
+        return $this->sendResponse($courseData,'Category data was sent successfully');
+    }
+
+    public function showLesson($lessonName) {
+        $lessonData = $this->courseService->getLesson($lessonName);
+        if (!$lessonData) {
+            return $this->sendError('No lesson found');
+        }
+        return $this->sendResponse($lessonData,'Lesson data was sent successfully');
+    }
 }

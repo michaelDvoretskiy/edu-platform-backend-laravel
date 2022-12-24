@@ -38,4 +38,9 @@ class Course extends Model
             'prog_language_id'
         );
     }
+
+    public function lessons()
+    {
+        return $this->hasMany(Lesson::class);
+    }
 }
