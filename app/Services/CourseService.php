@@ -68,6 +68,7 @@ class CourseService
             'title' => $course->title,
             'description' => $course->description,
             'name' => $course->name,
+            'img_path' => $course->img_path,
             'progLanguages' => implode(",", $course->progLanguages->map(function($elem) {
                 return $elem->name;
             })->toArray()),
@@ -77,6 +78,13 @@ class CourseService
                     'name' => $elem->name,
                     'description' => $elem->description,
                     'languages' => json_decode($elem->languages, true),
+                    'hasPdf' => $elem->materials->filter(function($item) {
+                        return $item['type'] == 'pdf';
+                    })->count() > 0 ? true : false,
+                    'hasVideo' => $elem->materials->filter(function($item) {
+                        return $item['type'] == 'video';
+                    })->count() > 0 ? true : false,
+                    'hasTasks' => $elem->tasks->count() > 0 ? true : false,
                 ];
             })
         ];
