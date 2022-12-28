@@ -6,6 +6,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\InfoController;
 use App\Http\Controllers\API\PageController;
 use App\Http\Controllers\API\CourseController;
+use App\Http\Controllers\API\PdfViewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +31,11 @@ Route::controller(InfoController::class)->prefix('/info')->group(function() {
 
 Route::controller(PageController::class)->prefix('/pages')->group(function() {
     Route::get('/{page}', 'show');
+});
+
+Route::controller(PdfViewController::class)->prefix('/pdf')->group(function() {
+    Route::get('/show/{id}', 'show');
+    Route::get('/get-content/{id}', 'getContent');
 });
 
 Route::controller(CourseController::class)->prefix('/courses')->group(function() {
