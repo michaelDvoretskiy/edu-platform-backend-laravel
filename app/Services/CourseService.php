@@ -17,15 +17,11 @@ class CourseService
         }
         return $categories->map(function($elem) {
             return [
+                'name' => $elem->name,
                 'title' => $elem->title,
                 'content_text' => $elem->description,
                 'img_path' => $elem->img_path,
-                'link_type' => $elem->link->type,
-                'link_title' => $elem->link->title,
-                'link' => $elem->link->link,
-                'link_params' => $elem->link->link_params,
-                'icon_exists' => $elem->link->icon_exists,
-                'icon_class' =>  $elem->link->icon_class
+                'link_title' => __('info.' . 'read more'),
             ];
         });
     }
@@ -45,12 +41,7 @@ class CourseService
                     'name' => $elem->name,
                     'description' => $elem->description,
                     'img_path' => $elem->img_path,
-                    'link_type' => $elem->link->type,
-                    'link_title' => $elem->link->title,
-                    'link' => $elem->link->link,
-                    'link_params' => $elem->link->link_params,
-                    'icon_exists' => $elem->link->icon_exists,
-                    'icon_class' =>  $elem->link->icon_class,
+                    'link_title' => __('info.' . 'read more'),
                     'progLanguages' => implode(",", $elem->progLanguages->map(function($elem) {
                         return $elem->name;
                     })->toArray()),
@@ -77,6 +68,7 @@ class CourseService
                     'title' => $elem->title,
                     'name' => $elem->name,
                     'description' => $elem->description,
+                    'link_title' => __('info.' . 'read more'),
                     'languages' => json_decode($elem->languages, true),
                     'hasPdf' => $elem->materials->filter(function($item) {
                         return $item['type'] == 'pdf';

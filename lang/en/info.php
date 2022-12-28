@@ -7,4 +7,5 @@ return [
     'addressTitle' => 'Address',
     'quickLinksTitle' => 'Quick Links',
     'rightsReserved' => 'Mykhailo Dvoretskyi, All Right Reserved.',
+    'read more' => 'Read more',
 ];

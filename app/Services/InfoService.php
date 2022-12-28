@@ -34,6 +34,7 @@ class InfoService
                 'link_type' => $elem->link->type,
                 'link_title' => $elem->link->title,
                 'link' => $elem->link->link,
+                'link_params' => $elem->link->link_params,
                 'icon_exists' => $elem->link->icon_exists,
                 'icon_class' =>  $elem->link->icon_class
             ];

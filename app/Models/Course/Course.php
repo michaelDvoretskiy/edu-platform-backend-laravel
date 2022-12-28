@@ -14,11 +14,6 @@ class Course extends Model
 
     public $translatable = ['title', 'description', 'link_title'];
 
-    public function link()
-    {
-        return $this->belongsTo(Link::class);
-    }
-
     public function categories()
     {
         return $this->belongsToMany(

@@ -20,8 +20,6 @@ return new class extends Migration
             $table->json('title');
             $table->json('description');
             $table->string('img_path', 100);
-            $table->unsignedBigInteger('link_id')->nullable();
-            $table->foreign('link_id')->references('id')->on('links');
             $table->json('languages');
             $table->integer('ord')->nullable();
         });

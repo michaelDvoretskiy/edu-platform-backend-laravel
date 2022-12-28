@@ -7,4 +7,5 @@ return [
     'addressTitle' => 'Адреса',
     'quickLinksTitle' => 'Швидкі посилання',
     'rightsReserved' => 'Михайло Дворецький, Усі права захищено.',
+    'read more' => 'Детальніше',
 ];

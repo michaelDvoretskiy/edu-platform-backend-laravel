@@ -7,4 +7,5 @@ return [
     'addressTitle' => 'Adres',
     'quickLinksTitle' => 'Szybkie linki',
     'rightsReserved' => 'Mykhailo Dvoretskyi, Wszystkie prawa zastrzeżone.',
+    'read more' => 'Czytaj więcej',
 ];
