@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Course\Course;
 use App\Models\Course\CourseCategory;
 use App\Models\Course\Lesson;
+use App\Models\General\Link;
 use App\Models\General\MenuItem;
 use App\Models\General\Page;
 
@@ -34,6 +35,7 @@ class CourseService
         return [
             'title' => $category->title,
             'description' => $category->description,
+            'headerLink' => $this->getHeaderLinks('category'),
             'img_path' => $category->img_path,
             'courses' => $category->courses->sortby('ord')->map(function($elem) {
                 return [
@@ -60,6 +62,7 @@ class CourseService
             'description' => $course->description,
             'name' => $course->name,
             'img_path' => $course->img_path,
+            'headerLink' => $this->getHeaderLinks('course'),
             'progLanguages' => implode(",", $course->progLanguages->map(function($elem) {
                 return $elem->name;
             })->toArray()),
@@ -91,6 +94,7 @@ class CourseService
             'title' => $lesson->title,
             'description' => $lesson->description,
             'name' => $lesson->name,
+            'headerLink' => $this->getHeaderLinks('lesson', $lesson),
             'languages' => json_decode($lesson->languages, true),
             'materials' => $lesson->materials->sortby('ord')->map(function($elem) {
                 return [
@@ -109,5 +113,34 @@ class CourseService
                 ];
             }),
         ];
+    }
+
+    private function getHeaderLinks($type, $object = null) {
+        $homeLink = Link::firstWhere('name', 'home');
+        $menu[] = [
+            'type' => $homeLink->type,
+            'title' => $homeLink->title,
+            'link' => $homeLink->link,
+            'link_params' => $homeLink->link_params,
+        ];
+        if (in_array($type, ['category','course','lesson'])) {
+            $categoriesLink = Link::firstWhere('name', 'categories');
+            $menu[] = [
+                'type' => $categoriesLink->type,
+                'title' => $categoriesLink->title,
+                'link' => $categoriesLink->link,
+                'link_params' => $categoriesLink->link_params,
+            ];
+        }
+        if ($type == 'lesson') {
+            $menu[] = [
+                'type' => 'route',
+                'title' => $object->course->title,
+                'link' => 'Lessons',
+                'link_params' => ['course' => $object->course->name],
+            ];
+        }
+
+        return $menu;
     }
 }
