@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Services\InfoService;
 use App\Http\Controllers\API\BaseController as BaseController;
+use Illuminate\Http\Request;
 
 class InfoController extends BaseController
 {

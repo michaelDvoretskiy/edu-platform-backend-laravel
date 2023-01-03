@@ -11,6 +11,11 @@ use App\Models\General\Page;
 
 class CourseService
 {
+
+    public function __construct(private AccessService $accessService) {
+
+    }
+
     public function getCategoriesList() {
         $categories = CourseCategory::orderBy('ord')->get();
         if (!$categories) {
@@ -52,11 +57,13 @@ class CourseService
         ];
     }
 
-    public function getCourse($name) {
+    public function getCourse($name, $user = null) {
         $course = Course::firstWhere('name', $name);
         if (!$course) {
             return false;
         }
+        $allowedLessons = $this->accessService->getAllowedLessons($course, $user);
+
         return [
             'title' => $course->title,
             'description' => $course->description,
@@ -66,12 +73,13 @@ class CourseService
             'progLanguages' => implode(",", $course->progLanguages->map(function($elem) {
                 return $elem->name;
             })->toArray()),
-            'lessons' => $course->lessons->sortby('ord')->map(function($elem) {
+            'lessons' => $course->lessons->sortby('ord')->map(function($elem) use ($allowedLessons) {
                 return [
                     'title' => $elem->title,
                     'name' => $elem->name,
                     'description' => $elem->description,
                     'link_title' => __('info.' . 'read more'),
+                    'allowed' => in_array($elem->id, $allowedLessons),
                     'languages' => json_decode($elem->languages, true),
                     'hasPdf' => $elem->materials->filter(function($item) {
                         return $item['type'] == 'pdf';
@@ -85,9 +93,12 @@ class CourseService
         ];
     }
 
-    public function getLesson($name) {
+    public function getLesson($name, $user = null) {
         $lesson = Lesson::firstWhere('name', $name);
         if (!$lesson) {
+            return false;
+        }
+        if (!$this->accessService->isLessonAvailableForUser($lesson, $user)) {
             return false;
         }
         return [

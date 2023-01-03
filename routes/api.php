@@ -35,7 +35,7 @@ Route::controller(PageController::class)->prefix('/pages')->group(function() {
 
 Route::controller(PdfViewController::class)->prefix('/pdf')->group(function() {
     Route::get('/show/{id}', 'show');
-    Route::get('/get-content/{id}', 'getContent');
+    Route::get('/get-content/{id}', 'getContent')->name('get-pdf-content');
 });
 
 Route::controller(CourseController::class)->prefix('/courses')->group(function() {
@@ -48,7 +48,6 @@ Route::controller(CourseController::class)->prefix('/courses')->group(function()
 Route::controller(PageController::class)->prefix('/team-members')->group(function() {
     Route::get('/{name}', 'getTeamMember');
 });
-
 
 Route::middleware('auth:sanctum')->group( function () {
     Route::get('/test', function() {

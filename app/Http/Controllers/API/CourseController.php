@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Services\CourseService;
+use Illuminate\Http\Request;
 
 class CourseController extends BaseController
 {
@@ -25,16 +26,18 @@ class CourseController extends BaseController
         return $this->sendResponse($categoryData,'Category data was sent successfully');
     }
 
-    public function showCourse($courseName) {
-        $courseData = $this->courseService->getCourse($courseName);
+    public function showCourse(Request $request, $courseName) {
+        $user = $request->user('sanctum');
+        $courseData = $this->courseService->getCourse($courseName, $user);
         if (!$courseData) {
             return $this->sendError('No course found');
         }
         return $this->sendResponse($courseData,'Category data was sent successfully');
     }
 
-    public function showLesson($lessonName) {
-        $lessonData = $this->courseService->getLesson($lessonName);
+    public function showLesson(Request $request, $lessonName) {
+        $user = $request->user('sanctum');
+        $lessonData = $this->courseService->getLesson($lessonName, $user);
         if (!$lessonData) {
             return $this->sendError('No lesson found');
         }
