@@ -2,12 +2,64 @@
 
 namespace App\Services;
 
+use App\Models\Course\Lesson;
+use App\Models\User;
+use App\Models\UserAccess\VerificationCode;
 use Illuminate\Support\Facades\DB;
 
 class AccessService
 {
     const CourseEnabled = 0;
     const CourseDisabled = 1;
+
+    public function emailIsBusy($email) {
+        $user = User::firstWhere('email', $email);
+        if (!$user) {
+            return false;
+        }
+        return true;
+    }
+
+    public function checkVerificationCode($email, $type, $code) {
+        $code = VerificationCode::where('email', $email)
+            ->where('type', $type)
+            ->where('approve_code', $code)->first();
+        if (!$code) {
+            return false;
+        }
+        return true;
+    }
+
+    public function getVerificationCode($email, $type) {
+        $code = VerificationCode::where('email', $email)
+            ->where('type', $type)->first();
+        if (!$code) {
+            $code = new VerificationCode();
+            $code->email = $email;
+            $code->type = $type;
+        }
+
+        try {
+            $code->approve_code = $token = bin2hex(random_bytes(5));
+            $code->save();
+            $this->sendMail($email, 'registration code', 'mail.verifcode', [
+                'code' => $code->approve_code,
+                'actionText' =>  $this->getActionText($type)
+            ]);
+        } catch (\Throwable $e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function getActionText($type) {
+        $text = [
+            'registration' => 'You are trying to register on education platforn LernIT',
+            'restore-passwd' => 'You are trying to change password on education platforn LernIT',
+        ];
+        return $text[$type];
+    }
 
     public function getAllowedLessons($course, $user) {
         $publicLessons = $course->lessons->filter(function ($elem, $key) {
@@ -153,5 +205,13 @@ class AccessService
         }
 
         return $lessonIds;
+    }
+
+    private function sendMail($email, $subject, $template, $data) {
+        $headers  = 'MIME-Version: 1.0' . "\r\n";
+        $headers .= 'Content-type: text/html; charset=UTF-8' . "\r\n";
+        $to = $email;
+        $message = view($template, $data);
+        mail($to, $subject, $message, $headers);
     }
 }

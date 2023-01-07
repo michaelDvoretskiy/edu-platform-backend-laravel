@@ -7,6 +7,7 @@ use App\Http\Controllers\API\InfoController;
 use App\Http\Controllers\API\PageController;
 use App\Http\Controllers\API\CourseController;
 use App\Http\Controllers\API\PdfViewController;
+use Illuminate\Support\Facades\Mail;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +23,8 @@ use App\Http\Controllers\API\PdfViewController;
 Route::controller(AuthController::class)->group(function(){
     Route::post('register', 'register');
     Route::post('login', 'login');
+    Route::get('verif-code/{type}', 'getVerificationCode');
+    Route::post('restore-pass', 'restorePassword');
 });
 
 Route::controller(InfoController::class)->prefix('/info')->group(function() {
