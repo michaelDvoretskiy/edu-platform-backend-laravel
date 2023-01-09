@@ -42,9 +42,9 @@ class AccessService
         try {
             $code->approve_code = $token = bin2hex(random_bytes(5));
             $code->save();
-            $this->sendMail($email, 'registration code', 'mail.verifcode', [
+            $this->sendMail($email, $this->getVerificationText($type, 'subject'), 'mail.verifcode', [
                 'code' => $code->approve_code,
-                'actionText' =>  $this->getActionText($type)
+                'actionText' =>  $this->getVerificationText($type, 'action-text')
             ]);
         } catch (\Throwable $e) {
             return false;
@@ -53,12 +53,18 @@ class AccessService
         return true;
     }
 
-    private function getActionText($type) {
+    private function getVerificationText($verifType, $textType) {
         $text = [
-            'registration' => 'You are trying to register on education platforn LernIT',
-            'restore-passwd' => 'You are trying to change password on education platforn LernIT',
+            'registration' => [
+                'action-text' => __('mailtemplate.regVerifText'),
+                'subject' => __('mailtemplate.regVerifSbj'),
+            ],
+            'restore-passwd' => [
+                'action-text' => __('mailtemplate.passVerifText'),
+                'subject' => __('mailtemplate.passVerifSbj'),
+            ]
         ];
-        return $text[$type];
+        return $text[$verifType][$textType];
     }
 
     public function getAllowedLessons($course, $user) {

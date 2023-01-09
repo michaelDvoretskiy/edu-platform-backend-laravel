@@ -30,6 +30,7 @@ Route::controller(AuthController::class)->group(function(){
 Route::controller(InfoController::class)->prefix('/info')->group(function() {
    Route::get('/get-general', 'getInfo');
    Route::get('/get-home-carousel', 'getHomeCarousel');
+   Route::get('/get-form-text/{formName}', 'getFormText');
 });
 
 Route::controller(PageController::class)->prefix('/pages')->group(function() {
