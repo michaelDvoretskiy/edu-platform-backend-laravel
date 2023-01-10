@@ -17,6 +17,18 @@ class InfoController extends BaseController
                 'Login form text was sent successfully.'
             );
         }
+        if ($formName == 'forgot-pass') {
+            return $this->sendResponse(
+                __('auth.forgotPass'),
+                'Forgot password form text was sent successfully.'
+            );
+        }
+        if ($formName == 'register') {
+            return $this->sendResponse(
+                __('auth.registerForm'),
+                'Registration form text was sent successfully.'
+            );
+        }
         return $this->sendError('Wrong form name');
     }
 
