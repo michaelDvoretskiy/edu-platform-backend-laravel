@@ -27,7 +27,7 @@ return [
         'msgConfCode' => 'Kod potwierdzający został wysłany na Twój adres e-mail',
     ],
     'registerForm' => [
-        'title' => 'Реєстрація облікового запису',
+        'title' => 'Rejestracja konta',
         'email' => 'Adres email',
         'userName' => 'Nazwa użytkownika',
         'verifCode' => 'Kod weryfikacyjny',

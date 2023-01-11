@@ -12,6 +12,9 @@ class AccessService
     const CourseEnabled = 0;
     const CourseDisabled = 1;
 
+    public function __construct(private MailService $mailService) {
+    }
+
     public function emailIsBusy($email) {
         $user = User::firstWhere('email', $email);
         if (!$user) {
@@ -214,10 +217,6 @@ class AccessService
     }
 
     private function sendMail($email, $subject, $template, $data) {
-        $headers  = 'MIME-Version: 1.0' . "\r\n";
-        $headers .= 'Content-type: text/html; charset=UTF-8' . "\r\n";
-        $to = $email;
-        $message = view($template, $data);
-        mail($to, $subject, $message, $headers);
+        $this->mailService->sendMail($email, $subject, $template, $data);
     }
 }

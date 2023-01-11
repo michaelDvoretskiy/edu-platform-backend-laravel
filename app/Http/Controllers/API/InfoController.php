@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Models\General\Feedback;
 use App\Services\InfoService;
 use App\Http\Controllers\API\BaseController as BaseController;
+use App\Services\MailService;
 use Illuminate\Http\Request;
+use Validator;
 
 class InfoController extends BaseController
 {
-    public function __construct(private InfoService $infoService) {}
+    public function __construct(private InfoService $infoService, private MailService $mailService) {}
 
     public function getFormText($formName) {
         if ($formName == 'login') {
@@ -43,6 +46,32 @@ class InfoController extends BaseController
         return $this->sendResponse(
             $this->infoService->getCarousel('homePage'),
             'Home carousel was sent successfully.'
+        );
+    }
+
+    public function reachFeedback(Request $request) {
+        $user = $request->user('sanctum');
+        if (!$user) {
+            return $this->sendError('Unauthorised');
+        }
+        $validator = Validator::make($request->all(), [
+            'subject' => 'required',
+            'message' => 'required',
+        ]);
+        if($validator->fails()){
+            return $this->sendError('Validation Error', $validator->errors());
+        }
+        try {
+            Feedback::create($request->all());
+            $mailTo = config('mail.feedbackTo');
+            $this->mailService->sendMail($mailTo, 'LearnIT user feedback', 'mail.feedback',
+                array_merge($request->all(), ['username' => $user->name, 'email' => $user->email]));
+        } catch(\Throwable $e) {
+            return $this->sendError('Something went wrong', $e->getMessage());
+        }
+        return $this->sendResponse(
+            'success',
+            'Feedback was sent successfully.'
         );
     }
 }

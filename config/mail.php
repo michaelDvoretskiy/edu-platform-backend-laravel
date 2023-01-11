@@ -1,7 +1,7 @@
 <?php
 
 return [
-
+    'feedbackTo' => 'm.dvoretskiy@gmail.com',
     /*
     |--------------------------------------------------------------------------
     | Default Mailer
