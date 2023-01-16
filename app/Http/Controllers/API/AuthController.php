@@ -14,6 +14,28 @@ class AuthController extends BaseController
 
     public function __construct(private AccessService $accessService) {}
 
+    public function checkCacheHasToBeCleared(Request $request) {
+        $user = $request->user('sanctum');
+        if (!$user) {
+            return $this->sendError('Unauthorised');
+        }
+
+        $cacheList = $this->accessService->getUserCacheList($user);
+
+        return $this->sendResponse($cacheList, 'Cache list for refresh formed successfully.');
+    }
+
+    public function updateCacheClearedDate(Request $request) {
+        $user = $request->user('sanctum');
+        if (!$user) {
+            return $this->sendError('Unauthorised');
+        }
+
+        $this->accessService->updateCacheClearedDate($user);
+
+        return $this->sendResponse('success', 'Cache clear date updated successfully.');
+    }
+
     /**
      * Register api
      * @return \Illuminate\Http\Response

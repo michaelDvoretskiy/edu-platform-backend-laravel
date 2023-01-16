@@ -105,6 +105,31 @@ class AccessService
         return $lesson->access_type == 'public';
     }
 
+    public function getUserCacheList($user) {
+        if (is_null($user->cache_updated)) {
+            $sql = "select distinct type from cache_dates where user_id is null";
+            $res = DB::select($sql);
+        } else {
+            $sql = "select distinct type from cache_dates
+                where (user_id is null or user_id = :useId) and cache_data_updated > :date";
+            $res = DB::select($sql, [
+                'useId' => $user->id,
+                'date' => $user->cache_updated,
+            ]);
+        }
+        return array_map(function($elem) {
+            return $elem->type;
+        }, $res);
+    }
+
+    public function updateCacheClearedDate($user, $date = null) {
+        if (is_null($date)) {
+            $date = new \DateTime();
+        }
+        $user->cache_updated = $date;
+        $user->save();
+    }
+
     public function isPdfAvailableForUser($pdfId, $user) {
         $sqlPublic = "SELECT m.pdf_storage_id
                 FROM lessons l inner join materials m on l.id = m.lesson_id

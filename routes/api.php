@@ -25,6 +25,8 @@ Route::controller(AuthController::class)->group(function(){
     Route::post('login', 'login');
     Route::get('verif-code/{type}', 'getVerificationCode');
     Route::post('restore-pass', 'restorePassword');
+    Route::get('user-cache/check', 'checkCacheHasToBeCleared');
+    Route::post('user-cache/update', 'updateCacheClearedDate');
 });
 
 Route::controller(InfoController::class)->prefix('/info')->group(function() {
