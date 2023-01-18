@@ -100,7 +100,7 @@ class AccessService
                 return true;
             }
             $allowedLessons = $this->lessonsForUser($lesson->course_id, $user->id, self::CourseEnabled);
-            return in_array($lesson->id, $allowedLessons);
+            return in_array($lesson->id, $allowedLessons) || $lesson->access_type == 'public';
         }
         return $lesson->access_type == 'public';
     }

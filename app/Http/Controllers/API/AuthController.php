@@ -19,6 +19,7 @@ class AuthController extends BaseController
         if (!$user) {
             return $this->sendError('Unauthorised');
         }
+//        return $this->sendResponse(['courses', 'frames'], 'Cache list for refresh formed successfully.');
 
         $cacheList = $this->accessService->getUserCacheList($user);
 
