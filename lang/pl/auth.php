@@ -41,5 +41,12 @@ return [
         'msgConfCode' => 'Kod potwierdzający został wysłany na Twój adres e-mail',
         'loginQ' => 'Posiadasz już konto?',
         'loginLink' => 'Zaloguj się tutaj',
+        'terms' => [
+            'start' => 'Zgadzam się na',
+            'link' => 'warunki korzystania z zasobu',
+            'title' => 'Warunki korzystania z zasobu',
+            'text1' => 'Zgadzam się szanować wyniki pracy intelektualnej.',
+            'text2' => 'Po uzyskaniu dostępu do materiałów z kursu/lekcji zobowiązują się nie przenosić praw dostępu na osoby trzecie, nie kopiować materiałów z kursu/lekcji oraz nie wykorzystywać uzyskanego dostępu do organizacji procesu edukacyjnego, w tym przez inne organizacje, instytucje, lub osoby fizyczne'
+        ]
     ]
 ];

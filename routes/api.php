@@ -42,7 +42,7 @@ Route::controller(PageController::class)->prefix('/pages')->group(function() {
 
 Route::controller(PdfViewController::class)->prefix('/pdf')->group(function() {
     Route::get('/show/{id}', 'show');
-    Route::get('/get-content/{id}', 'getContent')->name('get-pdf-content');
+    Route::get('/get-content/{id}/{type}', 'getContent')->name('get-pdf-content');
 });
 
 Route::controller(CourseController::class)->prefix('/courses')->group(function() {
@@ -56,11 +56,11 @@ Route::controller(PageController::class)->prefix('/team-members')->group(functio
     Route::get('/{name}', 'getTeamMember');
 });
 
-Route::middleware('auth:sanctum')->group( function () {
+//Route::middleware('auth:sanctum')->group( function () {
     Route::get('/test', function() {
-        return [1,2,3];
+        return [1 => 1/0,2,3];
     });
-});
+//});
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

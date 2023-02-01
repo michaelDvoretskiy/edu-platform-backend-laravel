@@ -130,9 +130,14 @@ class AccessService
         $user->save();
     }
 
-    public function isPdfAvailableForUser($pdfId, $user) {
+    public function isPdfAvailableForUser($pdfId, $user, $type) {
+        $tables = [
+            'material' => 'materials',
+            'task' => 'tasks'
+        ];
+        $table = $tables[$type] ?? 'materials';
         $sqlPublic = "SELECT m.pdf_storage_id
-                FROM lessons l inner join materials m on l.id = m.lesson_id
+                FROM lessons l inner join $table m on l.id = m.lesson_id
                 where m.pdf_storage_id = :pdfId and l.access_type = 'public'";
         $res = DB::select($sqlPublic, [
             'pdfId' => $pdfId,
@@ -147,7 +152,7 @@ class AccessService
 
         $sqlRoles = "SELECT m.pdf_storage_id
                 FROM course_accesses a inner join courses c on a.course_id = c.id
-                inner join lessons l on c.id = l.course_id inner join materials m on l.id = m.lesson_id
+                inner join lessons l on c.id = l.course_id inner join $table m on l.id = m.lesson_id
                 inner join user_roles ur on a.role_id = ur.role_id
                 where m.pdf_storage_id = :pdfId and a.disable = 0 and ur.user_id = :userId
                 union
@@ -155,12 +160,12 @@ class AccessService
                 FROM course_accesses a inner join course_categories cat on a.category_id = cat.id
                 inner JOIN course_category_courses cc on cat.id = cc.course_category_id
                 inner join courses c on cc.course_id = c.id
-                inner join lessons l on c.id = l.course_id inner join materials m on l.id = m.lesson_id
+                inner join lessons l on c.id = l.course_id inner join $table m on l.id = m.lesson_id
                 inner join user_roles ur on a.role_id = ur.role_id
                 where m.pdf_storage_id = :pdfId and a.disable = 0 and ur.user_id = :userId
                 union
                 SELECT m.pdf_storage_id
-                FROM course_accesses a inner join lessons l on a.lesson_id = l.id inner join materials m on l.id = m.lesson_id
+                FROM course_accesses a inner join lessons l on a.lesson_id = l.id inner join $table m on l.id = m.lesson_id
                 inner join user_roles ur on a.role_id = ur.role_id
                 where m.pdf_storage_id = :pdfId and a.disable = 0 and ur.user_id = :userId";
         $res = DB::select($sqlRoles, [
@@ -173,18 +178,18 @@ class AccessService
 
         $sqlUsers = "SELECT m.pdf_storage_id
                 FROM course_accesses a inner join courses c on a.course_id = c.id
-                inner join lessons l on c.id = l.course_id inner join materials m on l.id = m.lesson_id
+                inner join lessons l on c.id = l.course_id inner join $table m on l.id = m.lesson_id
                 where m.pdf_storage_id = :pdfId and a.disable = 0 and (a.user_id = :userId or (a.user_id is null and a.role_id is null))
                 union
                 SELECT m.pdf_storage_id
                 FROM course_accesses a inner join course_categories cat on a.category_id = cat.id
                 inner JOIN course_category_courses cc on cat.id = cc.course_category_id
                 inner join courses c on cc.course_id = c.id
-                inner join lessons l on c.id = l.course_id inner join materials m on l.id = m.lesson_id
+                inner join lessons l on c.id = l.course_id inner join $table m on l.id = m.lesson_id
                 where m.pdf_storage_id = :pdfId and a.disable = 0 and (a.user_id = :userId or (a.user_id is null and a.role_id is null))
                 union
                 SELECT m.pdf_storage_id
-                FROM course_accesses a inner join lessons l on a.lesson_id = l.id inner join materials m on l.id = m.lesson_id
+                FROM course_accesses a inner join lessons l on a.lesson_id = l.id inner join $table m on l.id = m.lesson_id
                 where m.pdf_storage_id = :pdfId and a.disable = 0 and (a.user_id = :userId or (a.user_id is null and a.role_id is null))";
         $res = DB::select($sqlUsers, [
             'userId' => $user->id,

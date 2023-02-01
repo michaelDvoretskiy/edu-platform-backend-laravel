@@ -41,5 +41,12 @@ return [
         'msgConfCode' => 'The conformation code was send to your email',
         'loginQ' => 'Already have an account?',
         'loginLink' => 'Login here',
+        'terms' => [
+            'start' => 'I agree with',
+            'link' => 'terms of resource using',
+            'title' => 'Terms of resource using',
+            'text1' => 'Users of the resource must respect the results of intellectual work.',
+            'text2' => 'Having gained access to course/lesson materials, resource users agree not to transfer access rights to third parties, not to copy course/lesson materials, and not to use the obtained access to organize the educational process, including by other organizations, institutions, or individuals'
+        ]
     ]
 ];

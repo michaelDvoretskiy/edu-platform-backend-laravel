@@ -31,7 +31,7 @@ class Course extends Model
             'course_prog_languages',
             'course_id',
             'prog_language_id'
-        );
+        )->orderBy('lngord');
     }
 
     public function lessons()

@@ -21,6 +21,6 @@ class CourseCategory extends Model
             'course_category_courses',
             'course_category_id',
             'course_id'
-        );
+        )->orderBy('ord2');
     }
 }

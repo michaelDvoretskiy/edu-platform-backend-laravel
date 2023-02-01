@@ -42,7 +42,8 @@ class CourseService
             'description' => $category->description,
             'headerLink' => $this->getHeaderLinks('category'),
             'img_path' => $category->img_path,
-            'courses' => $category->courses->sortby('ord')->map(function($elem) {
+//            'courses' => $category->courses->sortby('ord')->map(function($elem) {
+            'courses' => $category->courses->map(function($elem) {
                 return [
                     'title' => $elem->title,
                     'name' => $elem->name,
@@ -118,7 +119,8 @@ class CourseService
             'tasks' => $lesson->tasks->sortby('ord')->map(function($elem) {
                 return [
                     'title' => $elem->title,
-                    'file' => $elem->pdfStorage->id,
+                    'file' => $elem->pdfStorage?->id,
+                    'type' => $elem->type,
                     'points' => $elem->points,
                     'weight' => $elem->weight,
                 ];

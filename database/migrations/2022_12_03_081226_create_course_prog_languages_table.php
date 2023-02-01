@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreign('course_id')->references('id')->on('courses');
             $table->unsignedBigInteger('prog_language_id')->nullable();
             $table->foreign('prog_language_id')->references('id')->on('prog_languages');
+            $table->integer('lngord')->nullable();
             $table->unique(['course_id', 'prog_language_id'], 'course_prog_languages_unique');
         });
     }

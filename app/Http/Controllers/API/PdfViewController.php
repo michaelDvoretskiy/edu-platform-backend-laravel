@@ -15,20 +15,23 @@ class PdfViewController extends BaseController
 
     public function show($id) {
 //        return view('pdfviewer', ['pdfUrl' => route('get-pdf-content',['id' => $id])]);
-        $v = view('pdfviewer', ['pdfUrl' => route('get-pdf-content', ['id' => $id])])->render();
-        return $this->sendResponse(['html'=>$v], "");
+
+//        $v = view('pdfviewer', ['pdfUrl' => route('get-pdf-content', ['id' => $id])])->render();
+//        return $this->sendResponse(['html'=>$v], "");
+        return $this->sendResponse("Huray!", "Huray!");
     }
 
-    public function getContent(Request $request, $id) {
+    public function getContent(Request $request, $id, $type) {
         $user = $request->user('sanctum');
-        if (!$this->accessService->isPdfAvailableForUser($id, $user)) {
+        if (!$this->accessService->isPdfAvailableForUser($id, $user, $type)) {
             return $this->sendError("No data available");
         }
         $pdf = PdfStorage::firstWhere('id', $id);
         if (!$pdf) {
             return $this->sendError("No data available");
         }
-        $pdf_content = base64_encode(file_get_contents(storage_path($pdf->filePath)));
+        $filePath = $pdf->filePath ? $pdf->filePath : $pdf->getTranslation('filePath', 'default');
+        $pdf_content = base64_encode(file_get_contents(storage_path($filePath)));
 
         return $this->sendResponse(['content'=>$pdf_content], "");
     }
