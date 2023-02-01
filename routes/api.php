@@ -40,6 +40,8 @@ Route::controller(PageController::class)->prefix('/pages')->group(function() {
     Route::get('/{page}', 'show');
 });
 
+Route::get('/get-details', 'App\Http\Controllers\API\PdfViewController@getSubscribeDetails');
+
 Route::controller(PdfViewController::class)->prefix('/pdf')->group(function() {
     Route::get('/show/{id}', 'show');
     Route::get('/get-content/{id}/{type}', 'getContent')->name('get-pdf-content');

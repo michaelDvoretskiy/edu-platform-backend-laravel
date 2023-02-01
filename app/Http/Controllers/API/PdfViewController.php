@@ -54,4 +54,12 @@ class PdfViewController extends BaseController
         header('Access-Control-Allow-Credentials: true');
         echo $pdf_content;
     }
+
+    public function getSubscribeDetails() {
+        $path = storage_path("txt/details-".app()->getLocale().".txt");
+        header("Content-Type: application/octet-stream");    //
+        header("Content-Length: " . filesize($path));
+        header('Content-Disposition: attachment; filename=details.txt');
+        readfile($path);
+    }
 }
