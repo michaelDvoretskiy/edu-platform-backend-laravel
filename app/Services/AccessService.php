@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\Course\Course;
+use App\Models\Course\CourseCategory;
 use App\Models\Course\Lesson;
 use App\Models\User;
 use App\Models\UserAccess\VerificationCode;
@@ -154,7 +156,7 @@ class AccessService
                 FROM course_accesses a inner join courses c on a.course_id = c.id
                 inner join lessons l on c.id = l.course_id inner join $table m on l.id = m.lesson_id
                 inner join user_roles ur on a.role_id = ur.role_id
-                where m.pdf_storage_id = :pdfId and a.disable = 0 and ur.user_id = :userId
+                where m.pdf_storage_id = :pdfId and a.disable = 0 and ur.user_id = :userId and a.expired > now()
                 union
                 SELECT m.pdf_storage_id
                 FROM course_accesses a inner join course_categories cat on a.category_id = cat.id
@@ -162,12 +164,12 @@ class AccessService
                 inner join courses c on cc.course_id = c.id
                 inner join lessons l on c.id = l.course_id inner join $table m on l.id = m.lesson_id
                 inner join user_roles ur on a.role_id = ur.role_id
-                where m.pdf_storage_id = :pdfId and a.disable = 0 and ur.user_id = :userId
+                where m.pdf_storage_id = :pdfId and a.disable = 0 and ur.user_id = :userId and a.expired > now()
                 union
                 SELECT m.pdf_storage_id
                 FROM course_accesses a inner join lessons l on a.lesson_id = l.id inner join $table m on l.id = m.lesson_id
                 inner join user_roles ur on a.role_id = ur.role_id
-                where m.pdf_storage_id = :pdfId and a.disable = 0 and ur.user_id = :userId";
+                where m.pdf_storage_id = :pdfId and a.disable = 0 and ur.user_id = :userId and a.expired > now()";
         $res = DB::select($sqlRoles, [
             'userId' => $user->id,
             'pdfId' => $pdfId,
@@ -180,6 +182,7 @@ class AccessService
                 FROM course_accesses a inner join courses c on a.course_id = c.id
                 inner join lessons l on c.id = l.course_id inner join $table m on l.id = m.lesson_id
                 where m.pdf_storage_id = :pdfId and a.disable = 0 and (a.user_id = :userId or (a.user_id is null and a.role_id is null))
+                and a.expired > now()
                 union
                 SELECT m.pdf_storage_id
                 FROM course_accesses a inner join course_categories cat on a.category_id = cat.id
@@ -187,10 +190,12 @@ class AccessService
                 inner join courses c on cc.course_id = c.id
                 inner join lessons l on c.id = l.course_id inner join $table m on l.id = m.lesson_id
                 where m.pdf_storage_id = :pdfId and a.disable = 0 and (a.user_id = :userId or (a.user_id is null and a.role_id is null))
+                and a.expired > now()
                 union
                 SELECT m.pdf_storage_id
                 FROM course_accesses a inner join lessons l on a.lesson_id = l.id inner join $table m on l.id = m.lesson_id
-                where m.pdf_storage_id = :pdfId and a.disable = 0 and (a.user_id = :userId or (a.user_id is null and a.role_id is null))";
+                where m.pdf_storage_id = :pdfId and a.disable = 0 and (a.user_id = :userId or (a.user_id is null and a.role_id is null))
+                and a.expired > now()";
         $res = DB::select($sqlUsers, [
             'userId' => $user->id,
             'pdfId' => $pdfId,
@@ -199,24 +204,125 @@ class AccessService
         return count($res) > 0 ? true : false;
     }
 
+    public function getUserCoursesList($userId) {
+        $sql = "select id, max(`name`) `name`, max(title) title, max(expired) expired, max(is_enabled) is_enabled
+            from
+            (SELECT c.id, c.name, c.title, a.expired, a.expired > now() is_enabled
+                        FROM courses c inner join course_accesses a on c.id = a.course_id
+                        where a.disable = 0 and (a.user_id = :userId or (a.user_id is null and a.role_id is null))
+            UNION
+            SELECT c.id, c.name, c.title, a.expired, a.expired > now() is_enabled
+            FROM courses c inner join course_accesses a on c.id = a.course_id inner join user_roles ur on a.role_id = ur.role_id
+            where a.disable = 0 and ur.user_id = :userId) title
+            group by id
+            order by expired desc";
+        $res = DB::select($sql, [
+            'userId' => $userId,
+        ]);
+        $courses = Course::hydrate($res);
+        return $courses->map(function($elem) {
+            return [
+                'name' => $elem->name,
+                'title' => $elem->title,
+                'expired' => $elem->expired,
+                'isEnabled' => $elem->is_enabled,
+            ];
+        });
+    }
+
+    public function getUserLessonsList($userId) {
+        $sql = "select id, max(`name`) `name`, max(title) title, max(expired) expired, max(is_enabled) is_enabled
+            from
+            (SELECT l.id, l.name, l.title, a.expired, a.expired > now() is_enabled
+                        FROM lessons l inner join course_accesses a on l.id = a.lesson_id
+                        where a.disable = 0 and (a.user_id = :userId or (a.user_id is null and a.role_id is null))
+            UNION
+            SELECT l.id, l.name, l.title, a.expired, a.expired > now() is_enabled
+            FROM lessons l inner join course_accesses a on l.id = a.lesson_id inner join user_roles ur on a.role_id = ur.role_id
+            where a.disable = 0 and ur.user_id = :userId) title
+            group by id
+            order by expired desc";
+        $res = DB::select($sql, [
+            'userId' => $userId,
+        ]);
+        $courses = Course::hydrate($res);
+        return $courses->map(function($elem) {
+            return [
+                'name' => $elem->name,
+                'title' => $elem->title,
+                'expired' => $elem->expired,
+                'isEnabled' => $elem->is_enabled,
+            ];
+        });
+    }
+
+    public function getUserCategoriesList($userId) {
+        $sql = "select id, max(`name`) `name`, max(title) title, max(expired) expired, max(is_enabled) is_enabled
+            from
+            (SELECT cat.id, cat.name, cat.title, a.expired, a.expired > now() is_enabled
+                        FROM course_categories cat inner join course_accesses a on cat.id = a.category_id
+                        where a.disable = 0 and (a.user_id = :userId or (a.user_id is null and a.role_id is null))
+            UNION
+            SELECT cat.id, cat.name, cat.title, a.expired, a.expired > now() is_enabled
+            FROM course_categories cat inner join course_accesses a on cat.id = a.category_id inner join user_roles ur on a.role_id = ur.role_id
+            where a.disable = 0 and ur.user_id = :userId) title
+            group by id
+            order by expired desc";
+        $res = DB::select($sql, [
+            'userId' => $userId,
+        ]);
+        $cat = CourseCategory::hydrate($res);
+        return $cat->map(function($elem) {
+            return [
+                'name' => $elem->name,
+                'title' => $elem->title,
+                'expired' => $elem->expired,
+                'isEnabled' => $elem->is_enabled,
+            ];
+        });
+    }
+
+    public function getUserPoints($userId) {
+        $sql = "select operation_date, points, description
+            from `points`
+            where user_id = :userId
+            order by operation_date desc";
+        return DB::select($sql, [
+            'userId' => $userId,
+        ]);
+    }
+
+    public function getUserPointsRemain($userId) {
+        $sql = "select sum(points) p
+            from `points`
+            where user_id = :userId";
+        return DB::select($sql, [
+            'userId' => $userId,
+        ])[0]->p;
+    }
+
     private function isCourseForUser($courseId, $userId, $type = self::CourseEnabled) {
         $sql = "SELECT c.id FROM courses c inner join course_accesses a on c.id = a.course_id
             where c.id = :courseId and a.disable = :disabled and (a.user_id = :userId or (a.user_id is null and a.role_id is null))
+            and a.expired > now()
             union
             SELECT c.id FROM courses c inner JOIN course_category_courses cc on c.id = cc.course_id
             inner join course_categories cat on cc.course_category_id = cat.id
             inner join course_accesses a on cat.id = a.category_id
             where c.id = :courseId and a.disable = :disabled and (a.user_id = :userId or (a.user_id is null and a.role_id is null))
+            and a.expired > now()
             union
             SELECT c.id FROM courses c inner join course_accesses a on c.id = a.course_id
             inner join user_roles ur on a.role_id = ur.role_id
             where c.id = :courseId and a.disable = :disabled and ur.user_id = :userId
+            and a.expired > now()
             union
             SELECT c.id FROM courses c inner JOIN course_category_courses cc on c.id = cc.course_id
             inner join course_categories cat on cc.course_category_id = cat.id
             inner join course_accesses a on cat.id = a.category_id
             inner join user_roles ur on a.role_id = ur.role_id
-            where c.id = :courseId and a.disable = :disabled and ur.user_id = :userId";
+            where c.id = :courseId and a.disable = :disabled and ur.user_id = :userId
+            and a.expired > now()";
         $res = DB::select($sql, [
             'courseId' => $courseId,
             'userId' => $userId,
@@ -229,10 +335,12 @@ class AccessService
     private function lessonsForUser($courseId, $userId, $type = 'enabled') {
         $sql = 'SELECT l.id FROM courses c inner join lessons l on c.id = l.course_id inner join course_accesses a on l.id = a.lesson_id
             where c.id = :courseId and a.disable = :disabled and (a.user_id = :userId or (a.user_id is null and a.role_id is null))
+            and a.expired > now()
             union
             SELECT l.id FROM courses c inner join lessons l on c.id = l.course_id inner join course_accesses a on l.id = a.lesson_id
             inner join user_roles ur on a.role_id = ur.role_id
-            where c.id = :courseId and a.disable = :disabled and ur.user_id = :userId';
+            where c.id = :courseId and a.disable = :disabled and ur.user_id = :userId
+            and a.expired > now()';
         $res = DB::select($sql, [
             'courseId' => $courseId,
             'userId' => $userId,

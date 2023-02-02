@@ -8,11 +8,12 @@ use App\Models\General\MenuItem;
 
 class InfoService
 {
-    public function getInfo()
+    public function getInfo($userId)
     {
         return [
             'info' => $this->getConfigInfo(),
             'menu' => $this->getMainMenuLinks(),
+            'userMenu' => $this->getUserMenuLinks($userId),
             'socialLinks' => $this->getSocialLinks()
         ];
     }
@@ -60,6 +61,14 @@ class InfoService
     private function getMainMenuLinks()
     {
         $links = MenuItem::getMenuLinks('main_menu');
+        return $links->map->only(['title', 'link', 'type'])->all();
+    }
+
+    private function getUserMenuLinks($userId) {
+        if (!$userId) {
+            return [];
+        }
+        $links = MenuItem::getMenuLinks('user_menu');
         return $links->map->only(['title', 'link', 'type'])->all();
     }
 

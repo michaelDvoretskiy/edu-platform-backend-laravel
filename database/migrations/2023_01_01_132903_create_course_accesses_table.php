@@ -27,6 +27,7 @@ return new class extends Migration
             $table->unsignedBigInteger('lesson_id')->nullable();
             $table->foreign('lesson_id')->references('id')->on('lessons');
             $table->boolean('disable')->default(false);
+            $table->date('expired')->nullable();
         });
     }
 

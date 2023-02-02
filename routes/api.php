@@ -34,6 +34,8 @@ Route::controller(InfoController::class)->prefix('/info')->group(function() {
    Route::get('/get-home-carousel', 'getHomeCarousel');
    Route::get('/get-form-text/{formName}', 'getFormText');
    Route::post('/feedback', 'reachFeedback');
+   Route::get('/my-courses', 'getMyCourses');
+   Route::get('/my-points', 'getMyPoints');
 });
 
 Route::controller(PageController::class)->prefix('/pages')->group(function() {
