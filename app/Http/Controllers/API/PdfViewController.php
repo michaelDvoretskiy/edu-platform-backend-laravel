@@ -8,6 +8,7 @@ use App\Models\General\Page;
 use App\Services\AccessService;
 use App\Services\PageService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class PdfViewController extends BaseController
 {
@@ -31,7 +32,15 @@ class PdfViewController extends BaseController
             return $this->sendError("No data available");
         }
         $filePath = $pdf->filePath ? $pdf->filePath : $pdf->getTranslation('filePath', 'default');
+
+        $cacheKey = 'pdf-' . $filePath;
+        $pdf_cached_content = Cache::get($cacheKey);
+        if ($pdf_cached_content) {
+            return $this->sendResponse(['content'=>$pdf_cached_content, 'cached'=>true], "");
+        }
+
         $pdf_content = base64_encode(file_get_contents(storage_path($filePath)));
+        Cache::put($cacheKey, $pdf_content);
 
         return $this->sendResponse(['content'=>$pdf_content], "");
     }
