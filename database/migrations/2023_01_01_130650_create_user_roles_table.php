@@ -21,6 +21,14 @@ return new class extends Migration
             $table->unsignedBigInteger('role_id')->nullable();
             $table->foreign('role_id')->references('id')->on('roles');
             $table->unique(['user_id', 'role_id'], 'user_role_unique');
+            $table->dateTime('started_at');
+            $table->dateTime('finished_at')->nullable();
+            $table->string('status');
+            $table->json('zones');
+            $table->json('questions');
+            $table->json('answers')->nullable();
+            $table->json('right_answers');
+            $table->decimal('result');
         });
     }
 
