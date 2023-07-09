@@ -7,6 +7,7 @@ use App\Http\Controllers\API\InfoController;
 use App\Http\Controllers\API\PageController;
 use App\Http\Controllers\API\CourseController;
 use App\Http\Controllers\API\PdfViewController;
+use App\Http\Controllers\API\TestsController;
 use Illuminate\Support\Facades\Mail;
 
 /*
@@ -58,6 +59,10 @@ Route::controller(CourseController::class)->prefix('/courses')->group(function()
 
 Route::controller(PageController::class)->prefix('/team-members')->group(function() {
     Route::get('/{name}', 'getTeamMember');
+});
+
+Route::controller(TestsController::class)->prefix('/tests')->group(function() {
+    Route::get('/get-question/{id}', 'getQuestion');
 });
 
 //Route::middleware('auth:sanctum')->group( function () {
