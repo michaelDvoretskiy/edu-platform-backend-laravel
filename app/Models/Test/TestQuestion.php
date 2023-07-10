@@ -13,13 +13,13 @@ class TestQuestion extends Model
 
     public $translatable = ['title'];
 
-    public function Section()
+    public function section()
     {
         return $this->belongsTo(TestSection::class);
     }
 
-    public function questions()
+    public function answers()
     {
-        return $this->hasMany(TestAnswer::class);
+        return $this->hasMany(TestAnswer::class, 'question_id');
     }
 }

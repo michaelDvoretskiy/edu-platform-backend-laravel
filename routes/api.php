@@ -63,6 +63,7 @@ Route::controller(PageController::class)->prefix('/team-members')->group(functio
 
 Route::controller(TestsController::class)->prefix('/tests')->group(function() {
     Route::get('/get-question/{id}', 'getQuestion');
+    Route::get('/get-test/{id}', 'getUserTest');
 });
 
 //Route::middleware('auth:sanctum')->group( function () {

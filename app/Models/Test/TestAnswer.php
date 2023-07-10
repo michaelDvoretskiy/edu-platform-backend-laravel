@@ -13,6 +13,10 @@ class TestAnswer extends Model
 
     public $translatable = ['title'];
 
+    protected $attributes = [
+        'isRight' => 'is_right',
+    ];
+
     public function question()
     {
         return $this->belongsTo(TestQuestion::class);

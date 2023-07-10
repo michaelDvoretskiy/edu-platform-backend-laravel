@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Models\Models\Test;
+namespace App\Models\Test;
 
-use App\Models\Test\TestZoneTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,6 +11,6 @@ class TestZone extends Model
 
     public function zomeTimes()
     {
-        return $this->hasMany(TestZoneTime::class);
+        return $this->hasMany(TestZoneTime::class, 'zone_id', 'id');
     }
 }

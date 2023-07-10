@@ -17,4 +17,11 @@ class TestsController extends BaseController
             'Question was sent successfully'
         );
     }
+
+    public function getUserTest($id) {
+        return $this->sendResponse(
+            $this->testsService->generateTest($id),
+            'Question was sent successfully'
+        );
+    }
 }
