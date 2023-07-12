@@ -61,9 +61,11 @@ Route::controller(PageController::class)->prefix('/team-members')->group(functio
     Route::get('/{name}', 'getTeamMember');
 });
 
-Route::controller(TestsController::class)->prefix('/tests')->group(function() {
-    Route::get('/get-question/{id}', 'getQuestion');
-    Route::get('/get-test/{id}', 'getUserTest');
+Route::middleware('auth:sanctum')->group( function () {
+    Route::controller(TestsController::class)->prefix('/tests')->group(function() {
+        Route::get('/get-question/{id}', 'getQuestion');
+        Route::get('/get-test/{id}', 'getUserTest');
+    });
 });
 
 //Route::middleware('auth:sanctum')->group( function () {

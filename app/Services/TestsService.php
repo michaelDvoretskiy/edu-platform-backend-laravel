@@ -4,10 +4,24 @@ namespace App\Services;
 
 use App\Models\Test\Test;
 use App\Models\Test\TestQuestion;
+use App\Models\Test\UserTest;
 
 class TestsService
 {
-    public function generateTest($id) {
+    public function __construct(private TranslateService $translateService) {
+
+    }
+
+    public function getTest($id, $user) {
+        $test = UserTest::where(['test_id' => $id, 'user_id' => $user->id])->first();
+        if ($test) {
+//            dd($test);
+            return $test->jsonView($this->translateService);
+        }
+        return "!!!";
+    }
+
+    private function generateTest($id, $user) {
         // todo check if this test is available for the user
         $test = Test::find($id);
         if (!$test) {
@@ -59,7 +73,18 @@ class TestsService
                 })->toArray())
             ];
         }
-        return $testData;
+        $userTest = new UserTest();
+        $userTest->test_id = $id;
+        $userTest->user_id = $user->id;
+        $userTest->title = json_encode($testData['title'], true);
+        $userTest->status = 'new';
+        $userTest->zones = json_encode($testData['zone'], true);
+        $userTest->questions = json_encode($testData['questions'], true);
+        $userTest->right_answers = json_encode($testData['rightAnswers'], true);
+//        dd($userTest);
+        $userTest->save();
+
+        return true;
     }
 
     public function getOneQuestion($id) {

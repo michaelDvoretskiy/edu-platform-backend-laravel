@@ -18,9 +18,10 @@ class TestsController extends BaseController
         );
     }
 
-    public function getUserTest($id) {
+    public function getUserTest(Request $request, $id) {
+        $user = $request->user('sanctum');
         return $this->sendResponse(
-            $this->testsService->generateTest($id),
+            $this->testsService->getTest($id, $user),
             'Question was sent successfully'
         );
     }

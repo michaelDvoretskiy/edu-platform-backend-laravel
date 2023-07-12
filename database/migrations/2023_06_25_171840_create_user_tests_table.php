@@ -20,6 +20,12 @@ return new class extends Migration
             $table->foreign('test_id')->references('id')->on('tests');
             $table->unsignedBigInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users');
+            $table->string('status');
+            $table->json('title');
+            $table->json('zones');
+            $table->json('questions');
+            $table->json('answers')->nullable();
+            $table->json('right_answers');
         });
     }
 
