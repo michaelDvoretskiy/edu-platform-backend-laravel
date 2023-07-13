@@ -65,6 +65,7 @@ Route::middleware('auth:sanctum')->group( function () {
     Route::controller(TestsController::class)->prefix('/tests')->group(function() {
         Route::get('/get-question/{id}', 'getQuestion');
         Route::get('/get-test/{id}', 'getUserTest');
+        Route::post('/give-answer/{id}', 'giveAnswer');
     });
 });
 
