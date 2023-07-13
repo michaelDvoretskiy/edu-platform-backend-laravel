@@ -29,6 +29,7 @@ return new class extends Migration
             $table->json('answers')->nullable();
             $table->json('result')->nullable();
             $table->json('right_answers');
+            $table->unique(['user_id', 'test_id'], 'user_tests_unique');
         });
     }
 
