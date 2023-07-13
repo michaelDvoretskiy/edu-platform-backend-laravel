@@ -354,6 +354,18 @@ class AccessService
         return $lessonIds;
     }
 
+    public function testForUser($testId, $userId) {
+        $sql = 'SELECT a.test_id FROM test_accesses a
+            where a.test_id = :testId and (a.user_id = :userId or (a.user_id is null and a.role_id is null))
+            and a.expired > now()';
+        $res = DB::select($sql, [
+            'testId' => $testId,
+            'userId' => $userId
+        ]);
+
+        return count($res) > 0 ? true : false;
+    }
+
     private function sendMail($email, $subject, $template, $data) {
         $this->mailService->sendMail($email, $subject, $template, $data);
     }

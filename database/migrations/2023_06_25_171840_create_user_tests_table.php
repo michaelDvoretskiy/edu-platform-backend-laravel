@@ -21,10 +21,13 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users');
             $table->string('status');
+            $table->string('start_time');
+            $table->string('finish_time')->nullable();
             $table->json('title');
             $table->json('zones');
             $table->json('questions');
             $table->json('answers')->nullable();
+            $table->json('result')->nullable();
             $table->json('right_answers');
         });
     }

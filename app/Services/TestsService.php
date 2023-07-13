@@ -8,21 +8,30 @@ use App\Models\Test\UserTest;
 
 class TestsService
 {
-    public function __construct(private TranslateService $translateService) {
+    public function __construct(private TranslateService $translateService, private AccessService $accessService) {
 
     }
 
     public function getTest($id, $user) {
         $test = UserTest::where(['test_id' => $id, 'user_id' => $user->id])->first();
-        if ($test) {
-//            dd($test);
-            return $test->jsonView($this->translateService);
+        if (!$test) {
+            if (!$this->checkTestAvailability($id, $user->id)) {
+                return false;
+            }
+            $res = $this->generateTest($id, $user);
+            if (!$res) {
+                return false;
+            }
+            $test = UserTest::where(['test_id' => $id, 'user_id' => $user->id])->first();
         }
-        return "!!!";
+        return $test->jsonView($this->translateService);
+    }
+
+    private function checkTestAvailability($testId, $userId) {
+        return $this->accessService->testForUser($testId, $userId);
     }
 
     private function generateTest($id, $user) {
-        // todo check if this test is available for the user
         $test = Test::find($id);
         if (!$test) {
             return false;
@@ -81,6 +90,7 @@ class TestsService
         $userTest->zones = json_encode($testData['zone'], true);
         $userTest->questions = json_encode($testData['questions'], true);
         $userTest->right_answers = json_encode($testData['rightAnswers'], true);
+        $userTest->start_time = new \DateTime();
 //        dd($userTest);
         $userTest->save();
 

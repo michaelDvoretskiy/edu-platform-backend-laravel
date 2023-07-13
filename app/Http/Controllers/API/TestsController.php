@@ -20,9 +20,13 @@ class TestsController extends BaseController
 
     public function getUserTest(Request $request, $id) {
         $user = $request->user('sanctum');
+        $test = $this->testsService->getTest($id, $user);
+        if (!$test) {
+            return $this->sendError('No test found');
+        }
         return $this->sendResponse(
-            $this->testsService->getTest($id, $user),
-            'Question was sent successfully'
+            $test,
+            'Test was sent successfully'
         );
     }
 }
