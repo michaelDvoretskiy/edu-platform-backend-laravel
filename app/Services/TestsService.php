@@ -52,14 +52,18 @@ class TestsService
         foreach ($test->sections as $section) {
             $questionsAdded = 0;
             foreach ($section->questions->shuffle() as $question) {
-                $questions[] = $question;
+                $questions[] =[
+                    'q' => $question,
+                    'points' => $section->points
+                ];
                 $questionsAdded++;
                 if ($questionsAdded >= $section->questions_quantity) {
                     break;
                 }
             }
         }
-        foreach($questions as $question) {
+        foreach($questions as $questionData) {
+            $question = $questionData['q'];
             $testData['questions'][] = [
                 'id' => $question->id,
                 'title' => json_decode($question->getRawOriginal('title'), true),
@@ -71,7 +75,8 @@ class TestsService
                 }),
                 'multi' => $question->answers->filter(function($elem) {
                     return $elem->is_right == 1;
-                })->count() > 1 ? 1 : 0
+                })->count() > 1 ? 1 : 0,
+                'points' => $questionData['points']
             ];
             $testData['rightAnswers'][] = [
                 'question' => $question->id,

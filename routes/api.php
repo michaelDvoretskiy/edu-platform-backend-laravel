@@ -66,6 +66,7 @@ Route::middleware('auth:sanctum')->group( function () {
         Route::get('/get-question/{id}', 'getQuestion');
         Route::get('/get-test/{id}', 'getUserTest');
         Route::post('/give-answer/{id}', 'giveAnswer');
+        Route::post('/finish-test/{id}', 'finishTest');
     });
 });
 
