@@ -74,36 +74,7 @@ class TestsController extends BaseController
             return $this->sendError('No test found');
         }
 
-        $rightAnswers = json_decode($test->right_answers, true);
-        $givenAnswers = json_decode($test->answers, true) ?? [];
-        $questions = json_decode($test->questions, true);
-
-        $points = [];
-        foreach($rightAnswers as $rightAnswer) {
-            $key = array_search($rightAnswer['question'], array_column($givenAnswers, 'question'));
-            if ($key === false) {
-                $qAnswers = [];
-            } else {
-                $qAnswers = $givenAnswers[$key]['answers'];
-            }
-
-            $key = array_search($rightAnswer['question'], array_column($questions, 'id'));
-            $answersCount = count($questions[$key]['answers']);
-
-            $qRightAnswers = $rightAnswer['answers'];
-            $rightAnswersCount = count($qRightAnswers);
-            $point = ($rightAnswersCount - count(array_diff($qRightAnswers, $qAnswers))) / $rightAnswersCount;
-            $point -= count(array_diff($qAnswers, $qRightAnswers)) / ($answersCount - $rightAnswersCount);
-            if ($point < 0) {
-                $point = 0;
-            }
-
-            $points[] = [
-                'question' => $rightAnswer['question'],
-                'points' => $point * $questions[$key]['points']
-            ];
-        }
-
+        $points = $this->testsService->calculateResult($test);
         dd($points);
 
         return $this->sendResponse(

@@ -23,8 +23,7 @@ return new class extends Migration
             $table->string('status');
             $table->string('start_time');
             $table->string('finish_time')->nullable();
-            $table->json('title');
-            $table->json('zones');
+            $table->json('head');
             $table->json('questions');
             $table->json('answers')->nullable();
             $table->json('result')->nullable();

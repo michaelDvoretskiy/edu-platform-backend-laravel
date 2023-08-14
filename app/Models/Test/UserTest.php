@@ -11,9 +11,10 @@ class UserTest extends Model
 
     public function jsonView($translator)
     {
+        $head = json_decode($this->head,true);
+        $head['title'] = $translator->translateArray($head['title']);
         return [
-            'title' => $translator->translateArray(json_decode($this->title,true)),
-            'zones' => json_decode($this->zones,true),
+            'head' => $head,
             'questions' => array_map(function($question) use ($translator) {
                 $question['title'] = $translator->translateArray($question['title']);
                 $question['answers'] = array_map(function($answer) use ($translator) {
