@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\BaseController as BaseController;
+use App\Models\Test\Test;
 use App\Models\Test\UserTest;
 use App\Services\TestsService;
 use Illuminate\Http\Request;
@@ -35,6 +36,10 @@ class TestsController extends BaseController
         $test = UserTest::where(['test_id' => $id, 'user_id' => $user->id])->first();
         if (!$test) {
             return $this->sendError('No test found');
+        }
+
+        if ($this->testsService->isFinished($test)) {
+            return $this->sendError('The test was already finished !');
         }
 
         $newAnswers = $request->all() ?? [];
@@ -74,19 +79,44 @@ class TestsController extends BaseController
             return $this->sendError('No test found');
         }
 
+        if ($this->testsService->isFinished($test)) {
+            return $this->sendError('The test was already finished !');
+        }
+
+        $this->testsService->storeFinishDate($test);
         $points = $this->testsService->calculateResult($test);
-        dd($points);
 
         return $this->sendResponse(
-            [
-                $rightAnswers,
-                $givenAnswers
-            ],
+            $points,
             'Test was finished successfully'
         );
+    }
 
+    public function moveToArchive(Request $request, $id) {
+        $user = $request->user('sanctum');
+        $test = UserTest::where(['test_id' => $id, 'user_id' => $user->id])->first();
+        if (!$test) {
+            return $this->sendError('No test found');
+        }
 
+        if (!$this->testsService->isFinished($test)) {
+            return $this->sendError('The test is not finished !');
+        }
 
-        $finishTime = new \DateTime();
+        $originTest = Test::find($id);
+        if (!$originTest) {
+            return $this->sendError('No origin test found');
+        }
+
+        if($originTest->max_tries <= $this->testsService->triesSpended($id, $user->id) + 1) {
+            return $this->sendError('All tries were spent');
+        }
+
+        $this->testsService->moveToArchive($test);
+
+        return $this->sendResponse(
+            [],
+            'Test was moved to archive successfully'
+        );
     }
 }

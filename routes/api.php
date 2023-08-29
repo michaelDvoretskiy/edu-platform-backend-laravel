@@ -67,6 +67,7 @@ Route::middleware('auth:sanctum')->group( function () {
         Route::get('/get-test/{id}', 'getUserTest');
         Route::post('/give-answer/{id}', 'giveAnswer');
         Route::post('/finish-test/{id}', 'finishTest');
+        Route::delete('/to-archive/{id}', 'moveToArchive');
     });
 });
 

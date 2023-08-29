@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('user_tests', function (Blueprint $table) {
+        Schema::create('user_test_histories', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->unsignedBigInteger('test_id');
@@ -28,7 +28,6 @@ return new class extends Migration
             $table->json('answers')->nullable();
             $table->json('result')->nullable();
             $table->json('right_answers');
-            $table->unique(['user_id', 'test_id'], 'user_tests_unique');
         });
     }
 
@@ -39,6 +38,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_tests');
+        Schema::dropIfExists('user_test_histories');
     }
 };

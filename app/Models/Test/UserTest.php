@@ -13,7 +13,7 @@ class UserTest extends Model
     {
         $head = json_decode($this->head,true);
         $head['title'] = $translator->translateArray($head['title']);
-        return [
+        $json = [
             'head' => $head,
             'questions' => array_map(function($question) use ($translator) {
                 $question['title'] = $translator->translateArray($question['title']);
@@ -25,5 +25,10 @@ class UserTest extends Model
             }, json_decode($this->questions,true)),
             'answers' => json_decode($this->answers,true),
         ];
+        $res = json_decode($this->result,true);
+        if (!is_null($res)) {
+            $json['result'] = $res;
+        }
+        return $json;
     }
 }

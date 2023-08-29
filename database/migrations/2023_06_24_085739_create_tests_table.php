@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('zone_id');
             $table->foreign('zone_id')->references('id')->on('test_zones');
             $table->unsignedInteger('points');
+            $table->integer('max_tries');
         });
     }
 

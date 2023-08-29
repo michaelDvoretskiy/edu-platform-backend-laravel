@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Test\Test;
 use App\Models\Test\TestQuestion;
 use App\Models\Test\UserTest;
+use App\Models\Test\UserTestHistory;
 
 class TestsService
 {
@@ -28,10 +29,29 @@ class TestsService
     }
 
     public function calculateResult($test) {
+        $start = $this->getDate($test->started_at);
+        $finish = $this->getDate($test->finished_at);
+        $duration = ($finish->getTimestamp() - $start->getTimestamp()) / 60;
+
         $rightAnswers = json_decode($test->right_answers, true);
         $givenAnswers = json_decode($test->answers, true) ?? [];
         $questions = json_decode($test->questions, true);
         $head = json_decode($test->head, true);
+
+        $filteredZones = array_filter($head['zones']['times'], function($elem) use ($duration) {
+            return $elem['minutes'] < $duration;
+        });
+        usort($filteredZones, function($a, $b) {
+            if ($a['minutes'] == $b['minutes']) {
+                return 0;
+            }
+            return ($a['minutes'] > $b['minutes']) ? -1 : 1;
+        });
+        $filteredZones = array_values($filteredZones);
+        $finishKoef = 1;
+        if (count($filteredZones) > 0 ) {
+            $finishKoef = $filteredZones[0]['koef'];
+        }
 
         $points = []; $allPPoints = 0;
         foreach($rightAnswers as $rightAnswer) {
@@ -64,10 +84,37 @@ class TestsService
             $allPPoints += $points[$key]['normalizedPoints'];
         }
 
-        return [
-            'result' => $allPPoints,
-            'details' => $points
+        $testResult = [
+            'result' => [
+                'pointsSum' => $finishKoef == 0 ? 0 : $allPPoints,
+                'zoneKoef' => $finishKoef,
+                'durationMinutes' => $duration,
+                'final' => $finishKoef * $allPPoints
+            ],
+            'details' => $finishKoef == 0 ? [] : $points
         ];
+
+        $test->result = $testResult;
+        $test->save();
+
+        return $testResult;
+    }
+
+    public function moveToArchive($test) {
+        $archive = new UserTestHistory();
+        $archive->test_id = $test->test_id;
+        $archive->user_id = $test->user_id;
+        $archive->status = $test->status;
+        $archive->started_at = $test->started_at;
+        $archive->finished_at = $test->finished_at;
+        $archive->head = $test->head;
+        $archive->questions = $test->questions;
+        $archive->answers = $test->answers;
+        $archive->result = $test->result;
+        $archive->right_answers = $test->right_answers;
+        $archive->save();
+
+        $test->delete();
     }
 
     private function checkTestAvailability($testId, $userId) {
@@ -79,6 +126,12 @@ class TestsService
         if (!$test) {
             return false;
         }
+
+        $tryNumber = $this->triesSpended($id, $user->id) + 1;
+        if ($tryNumber > $test->max_tries) {
+            return false;
+        }
+
         $testData = [
             'head' => [
                 'title' => json_decode($test->getRawOriginal('title'),true),
@@ -91,6 +144,7 @@ class TestsService
                         ];
                     })
                 ],
+                'tryNumber' => $tryNumber
             ]
         ];
         $allAvailablePoints = $test->points; $allAvailablePointsBySections = 0;
@@ -146,11 +200,30 @@ class TestsService
         $userTest->head = json_encode($testData['head'], true);
         $userTest->questions = json_encode($testData['questions'], true);
         $userTest->right_answers = json_encode($testData['rightAnswers'], true);
-        $userTest->start_time = new \DateTime();
+        $userTest->started_at = new \DateTime();
 //        dd($userTest);
         $userTest->save();
 
         return true;
+    }
+
+    public function isFinished($userTest) {
+        if (!is_null($userTest->finished_at) && !is_null($userTest->result)) {
+            return true;
+        }
+        return false;
+    }
+
+    public function triesSpended($testId, $userId) {
+        return UserTestHistory::where([
+            ['test_id', '=', $testId],
+            ['user_id', '=', $userId]
+        ])->count();
+    }
+
+    public function storeFinishDate($userTest) {
+        $userTest->finished_at = new \DateTime();
+        $userTest->save();
     }
 
     public function getOneQuestion($id) {
@@ -158,5 +231,12 @@ class TestsService
         return [
             "title" => $question->title,
         ];
+    }
+
+    private function getDate($date) {
+        if (is_string($date)) {
+            return new \DateTime($date);
+        }
+        return $date;
     }
 }
